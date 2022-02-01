@@ -15,7 +15,7 @@ struct Node {
   explicit Node(int val = 0) : prev(nullptr), value(val) {}
   Node(const Node& rhs) = delete;
   Node& operator=(const Node& rhs) = delete;
-  Node(Node&& rhs)                 = default;
+  Node(Node&& rhs) = default;
   Node& operator=(Node&& rhs) = default;
 
   /**
@@ -23,25 +23,20 @@ struct Node {
    *
    * @param val
    */
-  void
-  insert(T val) {
-    auto node  = std::make_unique<Node>(val);
+  void insert(T val) {
+    auto node = std::make_unique<Node>(val);
     node->next = std::move(next);
     if (node->next) {
       node->next->prev = node.get();
     }
     node->prev = this;
-    next       = std::move(node);
+    next = std::move(node);
   }
 
   // 将当前节点删除
-  void
-  erase() {
-    if (next)
-      next->prev = prev;
-    std::unique_ptr<Node> next_bak = std::move(next);
-    if (prev)
-      prev->next = std::move(next_bak);
+  void erase() {
+    if (next) next->prev = prev;
+    if (prev) prev->next = std::move(next);
   }
 
   ~Node() {
@@ -57,8 +52,7 @@ struct List {
 
   List(List const& other) {
     printf("List 被拷贝！\n");
-    if (this == &other)
-      return;
+    if (this == &other) return;
 
     Node<T>* curr = other.front();
     while (curr->next) {
@@ -72,29 +66,21 @@ struct List {
 
   List& operator=(List const&) = delete;  // 为什么删除拷贝赋值函数也不出错？
 
-  List(List&&)  = default;
+  List(List&&) = default;
   List& operator=(List&&) = default;
-  ~List()                 = default;
+  ~List() = default;
 
-  Node<T>*
-  front() const {
-    return dummy_head.next.get();
-  }
+  Node<T>* front() const { return dummy_head.next.get(); }
 
-  T
-  pop_front() {
+  T pop_front() {
     T ret = dummy_head.next->value;
     dummy_head.next->erase();
     return ret;
   }
 
-  void
-  push_front(T value) {
-    dummy_head.insert(value);
-  }
+  void push_front(T value) { dummy_head.insert(value); }
 
-  Node<T>*
-  at(size_t index) const {
+  Node<T>* at(size_t index) const {
     auto curr = front();
     for (size_t i = 0; i < index; i++) {
       curr = curr->next.get();
@@ -104,8 +90,7 @@ struct List {
 };
 
 template <typename T>
-void
-print(const List<T>& lst) {  // 有什么值得改进的？
+void print(const List<T>& lst) {  // 有什么值得改进的？
   printf("[");
   for (auto curr = lst.front(); curr; curr = curr->next.get()) {
     printf(" %d", curr->value);
@@ -113,8 +98,7 @@ print(const List<T>& lst) {  // 有什么值得改进的？
   printf(" ]\n");
 }
 
-int
-main() {
+int main() {
   List<int> a;
 
   a.push_front(7);
